@@ -4,13 +4,13 @@
 typedef struct Memory_Register_Base{
     int length;
     void** data;
-}Mem_reg;
+}MEM_REG;
 
 
 
 
-Mem_reg* memory_registration (void);
-void  memory_pointer_push    (void*);
+MEM_REG* memory_registration (void);
+void  memory_pointer_push    (void**);
 void  memory_pointer_remove  (void*);
 void  memory_clear           (void);
 #endif

@@ -9,8 +9,8 @@ typedef struct Dynamic_Array_Base{
     size_t type;
 }Arr;
 
-void  arr_init     (Arr*, size_t);
-void  arr_resize   (Arr*);
-void  arr_push     (Arr*, void*);
+int  arr_init     (Arr*, size_t);
+int  arr_resize   (Arr*);
+int  arr_push     (Arr*, void*);
 
 #endif

@@ -3,6 +3,6 @@
 #include "../include/dynamic_array.h"
 #include "../include/memory_register.h"
 
-void  input_parser  (Arr*);
-void  input_reader  (char**, int);
+int  input_parser  (Arr*);
+int  input_reader  (char**, int);
 #endif

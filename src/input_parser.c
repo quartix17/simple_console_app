@@ -7,12 +7,13 @@
 #include "../include/input_parser.h"
 #include "../include/calculator.h"
 #include "../include/config.h"
+#include "../include/files.h"
 
-void input_parser(Arr* arr){
+int input_parser(Arr* arr){
     char* command = (char*)arr->arr;
 
-    Arr command_Parts;
-    arr_init(&command_Parts,sizeof (char*) );
+    Arr command_parts;
+    arr_init(&command_parts,sizeof (char*) );
  
     int i = 0;
 
@@ -23,12 +24,12 @@ void input_parser(Arr* arr){
         if (command[i] == '\0') break; 
         
         int j = 0;
-        char Word[ARRAY_MAX_SIZE];
+        char Word[ARRAY_MAX_SIZE + 1];
 
-        while(command[i] != ' ' && command[i] != '\t' && command[i] != '\0'){
+        while(!isspace(command[i]) && command[i] != '\0'){
             if(j>=ARRAY_MAX_SIZE){
-                printf("Too long word\n"); // buffer overflow checker
-                exit(EXIT_FAILURE);
+                fprintf(stderr, "Too long word\n"); // buffer overflow checker
+                return -1;
             }
             Word[j++] = command[i++];
         }
@@ -37,34 +38,34 @@ void input_parser(Arr* arr){
 
         char * str = strdup(Word);
         if(str == NULL){
-            printf("Strdup = NULL\n");
-            exit(EXIT_FAILURE);
+            fprintf(stderr, "Strdup = NULL\n");
+            return -1;
         }
-        arr_push(&command_Parts,&str);
-        memory_pointer_push(str); 
+        arr_push(&command_parts,&str);
+        memory_pointer_push((void**)&str);
+        if(str == NULL){
+            return -1;
+        }
     }
-    input_reader((char**)command_Parts.arr,command_Parts.elements);
-    return;
+    return input_reader((char**)command_parts.arr,command_parts.elements);
+    
 }
 
-void input_reader(char** str,int size){
-
-    if(strcmp(str[0], "exit") == 0){
-        exit(EXIT_SUCCESS);
+int  input_reader(char** str,int size){
+    if(size == 0){
+        return EXIT_SUCCESS;
     }
 
-    else if(strcmp(str[0], "help") == 0){
-        printf("Available functions: calc  print  exit  \n"
-            "\ncalc {arguments} \tdescription: calculate simple expressions         \texample: calc 12.3+12--12/5.23\n"
-            "\nprint {arguments}\tdescription: print any string you write           \texample: print hello world\n"
-            "\nexit             \tdescription: exit the programm                    \texample: exit\n"
-            "\nclear            \tdescription: the same as \"clear\"function in terminal\texample: clear\n");
-        return;
+    if(strcmp(str[0], "exit") == 0){
+        return 3;
+    }
+
+     else if(strcmp(str[0],"help") == 0){
+        cat(1,str);
     }
 
     else if(strcmp(str[0],"clear") == 0){
-        system("clear");
-        return;
+        printf("\033[H\033[J");
     }
 
     else if(strcmp(str[0], "calc" ) == 0){
@@ -80,10 +81,24 @@ void input_reader(char** str,int size){
         }
         printf("\n");
     }
+    else if(strcmp(str[0], "mv") == 0){
+        move_file(str[1], str[2]);
+    }
+    else if(strcmp(str[0], "cp") == 0){
+        copy_from_file_to_file(str[1], str[2]);
+    }
+    else if(strcmp(str[0], "cat") == 0){
+        cat(size - 1, str + 1 );
+    }
+    else if(strcmp(str[0], "head") == 0){
+        head(str[1], str[2]);
+    }
+    else if(strcmp(str[0], "tail") == 0){
+        tail(str[1], str[2]);
+    }
 
     else{
-        printf("Unknown command\n");
-        return;
+        fprintf(stderr, "Unknown command\n");
     }
-        
+    return EXIT_SUCCESS;
 }

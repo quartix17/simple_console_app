@@ -1,0 +1,22 @@
+Available commands   Description				       Syntax
+	
+help		     Print iinformation about available commands       help
+
+clear		     Remove all the symbols from console               clear
+
+cacl                 Calculate expresions			       calc EXPRESSION
+
+print                Writes text in console			       print TEXT
+
+mv                   Move file from FILE1 to FILE2, also renames file  mv FILE1 FILE2
+
+cp                   Copy FILE1 to FILE2			       cp FILE1 FILE2
+
+cat                  Write files in console			       cat file1 file2 ...
+
+head		     Write first COUNT lines of file		       head COUNT FILE
+
+tail		     Write last COUNT lines of file		       tail COUNT FILE
+
+exit		     Exit programm				       exit
+

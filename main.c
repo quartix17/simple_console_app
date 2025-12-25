@@ -7,19 +7,28 @@
 #include "include/input_parser.h"
 #include "include/calculator.h"
 #include "include/dynamic_array.h"
+#include "include/files.h"
+#include "include/config.h"
 
 
 int main(void){
+
     memory_registration();
 
     while(1){
         Arr arr;
-        arr_init(&arr,sizeof(char));
+        if(arr_init(&arr,sizeof(char)) == EXIT_FAILURE){
+            return EXIT_FAILURE;
+        }
+
 
         int c;
-        printf(">");
+        printf("%s", CONSOLE_COMMAND_HEADER);
         while((c=getchar())!= EOF && c!='\n'){
             arr_push(&arr,(void*)&c);
+        }
+        if(feof(stdin)){
+            return EXIT_SUCCESS;
         }
 
         if (arr.elements == arr.allocated) {
@@ -27,7 +36,7 @@ int main(void){
         }
 
         ((char*)arr.arr)[arr.elements] = '\0';
-        input_parser(&arr);
+        if(input_parser(&arr) == 3) break;
     }
     
     return EXIT_SUCCESS;
