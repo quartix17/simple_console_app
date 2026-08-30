@@ -14,7 +14,7 @@
 
 
 ssize_t read_segment_from_file(int fd_src, char* buffer, long buffer_size){
-    
+
     if(fd_src < 0){
         fprintf(stderr, "File descriptor must be greater than 0\n");
         return -1;
@@ -46,7 +46,7 @@ void print_file(int fd_src, int lseek_offset){
 }
 
 ssize_t cat( int files_count, char** files){
-        
+
     ssize_t printed_files_count = 0;
 
     int fd_src;
@@ -59,7 +59,7 @@ ssize_t cat( int files_count, char** files){
             print_file(fd_src, 0);
         }
 
-    
+
         close(fd_src);
     }
     return printed_files_count;
@@ -75,13 +75,13 @@ ssize_t head( char* file, char* arg_str){
 
     if(*tmp != '\0'){
         printf("\"%s\": Invalid number of lines\n", arg_str);
-        return EXIT_FAILURE;
+        return 1;
     }
-    if(argument == 0) return EXIT_SUCCESS;
-    
+    if(argument == 0) return 0;
 
 
-    
+
+
 
     char buffer[BUFFER_SIZE+1];
 
@@ -91,15 +91,15 @@ ssize_t head( char* file, char* arg_str){
     int fd_file = open(file, O_RDONLY);
     if(fd_file < 0){
         printf("\"%s\": No such file or directory\n", file);
-        return EXIT_FAILURE;
+        return 1;
     }
 
-    
-    
-    
 
- 
-    
+
+
+
+
+
     while((received = read_segment_from_file(fd_file, buffer, BUFFER_SIZE)) > 0){
         unsigned i = 0;
         for(i = 0; i < received; i++){
@@ -112,19 +112,19 @@ ssize_t head( char* file, char* arg_str){
         chars_to_write = i+1;
         sent = write(STDOUT_FILENO, buffer, chars_to_write);
         if(sent != chars_to_write){
-            
+
                 printf("Print error\n");
                 close(fd_file);
-                return EXIT_FAILURE;
-            
+                return 1;
+
         }
 
         if(argument == 0){
             break;
         }
     }
-    
-  
+
+
     if (fd_file >= 0) close(fd_file);
     return 0;
 }
@@ -133,7 +133,7 @@ ssize_t tail(char* file, char* arg_str){
     bool special_case = false;
 
     if(arg_str[0] == '+'){
-        
+
          special_case = true;
 
     }
@@ -145,13 +145,13 @@ ssize_t tail(char* file, char* arg_str){
 
     if(*tmp != '\0'){
         printf("\"%s\": Invadid number of lines\n", arg_str);
-        return EXIT_FAILURE;
+        return 1;
     }
 
     int fd_data = open(file, O_RDONLY);
     if(fd_data< 0){
         printf("Error cannot open file\n");
-        return EXIT_FAILURE;
+        return 1;
     }
 
 
@@ -164,7 +164,7 @@ ssize_t tail(char* file, char* arg_str){
         current = 0;
         lseek(fd_data, 0, SEEK_SET);
         while((received = read_segment_from_file(fd_data, buffer, BUFFER_SIZE)) > 0){
-        
+
             for(buffer_pos = 0; buffer_pos < received; buffer_pos++){
                 if(buffer[buffer_pos] == '\n'){
                     if(--argument == 0){
@@ -178,8 +178,8 @@ ssize_t tail(char* file, char* arg_str){
                 break;
             }
         }
-        
-        
+
+
 
 
     }else{
@@ -193,11 +193,11 @@ ssize_t tail(char* file, char* arg_str){
 
             lseek(fd_data, current, SEEK_SET);
             if((received = read_segment_from_file(fd_data, buffer, get)) < 0 ){
-                return EXIT_FAILURE;
+                return 1;
             }
 
             for(buffer_pos = received - 1; buffer_pos>=0;buffer_pos--){
-                if(buffer[buffer_pos] == '\n'){  
+                if(buffer[buffer_pos] == '\n'){
                     if(--argument == 0){
                         break;
                     }
@@ -210,14 +210,14 @@ ssize_t tail(char* file, char* arg_str){
         }
 
         current += buffer_pos + 1;
-        
+
     }
 
     print_file(fd_data, current);
 
     close(fd_data);
-    return EXIT_SUCCESS;
-} 
+    return 0;
+}
 
 
 ssize_t copy_from_file_to_file(char* src, char* dest){
@@ -226,12 +226,12 @@ ssize_t copy_from_file_to_file(char* src, char* dest){
 
     if((fd_src = open(src, O_RDONLY,0)) < 0){
         printf("cp: Cant open \"%s\": no such file or directory\n",src);
-        return EXIT_FAILURE;
+        return 1;
     }
     if((fd_dest = creat(dest, 0644)) < 0){
         printf("cp: Cant create \"%s\"\n",dest);
         close(fd_src);
-        return EXIT_FAILURE;
+        return 1;
     }
 
     char buffer[BUFFER_SIZE];
@@ -242,34 +242,30 @@ ssize_t copy_from_file_to_file(char* src, char* dest){
                 fprintf(stderr, "cp: Error while reading file \"%s\"", src);
                 close(fd_src);
                 close(fd_dest);
-                return EXIT_FAILURE;
+                return 1;
         }
         wrote = write(fd_dest, buffer, received);
         if(wrote!=received){
             close(fd_src);
             close(fd_dest);
             fprintf(stderr, "cp: Error writing in file \"%s\"\n", dest);
-            return EXIT_FAILURE;
+            return 1;
 
-        } 
+        }
     }
 
     close(fd_src);
     close(fd_dest);
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 
 ssize_t move_file(char* src, char* dest){
 
     if(rename(src, dest) == 0){
-        return EXIT_SUCCESS;
+        return 0;
     }else{
         fprintf(stderr,"Cannot rename file \"%s\"\n", src);
-        return EXIT_FAILURE;
+        return 1;
     }
 }
-
-
-
-

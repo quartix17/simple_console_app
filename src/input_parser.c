@@ -14,15 +14,15 @@ int input_parser(Arr* arr){
 
     Arr command_parts;
     arr_init(&command_parts,sizeof (char*) );
- 
+
     int i = 0;
 
     while(command[i] != '\0'){
         while(isspace(command[i])){
             i++;
         }
-        if (command[i] == '\0') break; 
-        
+        if (command[i] == '\0') break;
+
         int j = 0;
         char Word[ARRAY_MAX_SIZE + 1];
 
@@ -48,12 +48,12 @@ int input_parser(Arr* arr){
         }
     }
     return input_reader((char**)command_parts.arr,command_parts.elements);
-    
+
 }
 
 int  input_reader(char** str,int size){
     if(size == 0){
-        return EXIT_SUCCESS;
+        return 1;
     }
 
     if(strcmp(str[0], "exit") == 0){
@@ -100,5 +100,5 @@ int  input_reader(char** str,int size){
     else{
         fprintf(stderr, "Unknown command\n");
     }
-    return EXIT_SUCCESS;
+    return 0;
 }
