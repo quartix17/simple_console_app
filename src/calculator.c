@@ -17,29 +17,33 @@ double perform_operation(double a, double b, char act){
         case '/':
             if (b == 0) {
             fprintf(stderr,"Error: Division by zero\n");
-            exit(EXIT_FAILURE);
+            return NAN;
         }
             return a/b;
     }
     return 0;
 }
 
-void process_high_priority_operations(double* Nums,int* Num_Size,char* Act, int* Act_Size){
+int process_high_priority_operations(double* Nums,int* Num_Size,char* Act, int* Act_Size){
     for(int i = 0; i < *Act_Size; i++){
         if(Act[i] == '/' || Act[i] == '*'){
             double New_Val = perform_operation(Nums[i],Nums[i+1],Act[i]);
+            if(New_Val == NAN){
+                return 1;
+            }
             Nums[i] = New_Val;
             memmove(&Nums[i+1],&Nums[i+2],(*Num_Size - (i + 2)) * sizeof(Nums[i]));
             (*Num_Size)--;
             memmove(&Act[i],&Act[i+1],(*Act_Size - (i + 1)) * sizeof(Act[i]));
             (*Act_Size)--;
             process_high_priority_operations(Nums,Num_Size,Act,Act_Size);
-            return;
+            return 0;
         }
     }
+    return 0;
 }
 
-void process_low_priority_operations(double* Nums,int* Num_Size,char* Act, int* Act_Size){
+int process_low_priority_operations(double* Nums,int* Num_Size,char* Act, int* Act_Size){
     for(int i = 0; i < *Act_Size; i++){
         if(Act[i] == '+' || Act[i] == '-'){
             double New_val = perform_operation(Nums[i],Nums[i+1],Act[i]);
@@ -49,29 +53,32 @@ void process_low_priority_operations(double* Nums,int* Num_Size,char* Act, int* 
             memmove(&Act[i],&Act[i+1],(*Act_Size - (i + 1)) * sizeof(Act[i]));
             (*Act_Size)--;
             process_low_priority_operations(Nums,Num_Size,Act,Act_Size);
-            return;
+            return 0;
         }
     }
+    return 0;
 }
 
 double calculate_expression(double* Nums,int* NumSize,char* Act, int* ActSize){
 
-    process_high_priority_operations(Nums,NumSize,Act,ActSize); // counting * and / operations
-    process_low_priority_operations(Nums,NumSize,Act,ActSize); // + and - aperations
+    if (process_high_priority_operations(Nums,NumSize,Act,ActSize) == 1){ // counting * and / operations
+        return NAN;
+    }
+    process_low_priority_operations(Nums,NumSize,Act,ActSize);            // + and - aperations
 
     return Nums[0];
 }
 
 
 
-void calculator(char** src,int size){
+int calculator(char** src,int size){
     int source_overflow_detector = 0;
     for(int i = 1;i < size; i++){
         source_overflow_detector += (int)strlen(src[i]); // buffer overflow detection,if count of symbols in argument is more than ARRAY_MAX_SIZE - exit function
     }
     if(source_overflow_detector >= ARRAY_MAX_SIZE){
         fprintf(stderr, "Too many arguments in function \"calculator\"\n");
-        return;
+        return 1;
     }
     char source[ARRAY_MAX_SIZE];
     int sourse_length = 0;
@@ -101,7 +108,7 @@ void calculator(char** src,int size){
         double x = strtod(tmp, &endptr);
         if(tmp == endptr){
             fprintf(stderr, "Not a number\n");
-            return;
+            return 1;
         }
 
         nums[nums_s++] = x;
@@ -117,10 +124,15 @@ void calculator(char** src,int size){
         }
         else {
             fprintf(stderr, "Error: unexpected character '%c'\n", *tmp);
-            return;
+            return 1;
         }
 
     }
-    printf("%g\n",calculate_expression(nums,&nums_s,act,&act_s));
+    double final_result = calculate_expression(nums,&nums_s,act,&act_s);
+    if(isnan(final_result)){
+        return 1;
+    }
+    printf("%g\n",final_result);
+    return 0;
 
 }
