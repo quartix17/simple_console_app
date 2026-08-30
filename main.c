@@ -17,7 +17,7 @@ int main(void){
 
     while(1){
         Arr arr;
-        if(arr_init(&arr,sizeof(char)) == EXIT_FAILURE){
+        if(arr_init(&arr,sizeof(char)) == 1){
             return EXIT_FAILURE;
         }
 
@@ -38,6 +38,6 @@ int main(void){
         ((char*)arr.arr)[arr.elements] = '\0';
         if(input_parser(&arr) == 3) break;
     }
-    
+
     return EXIT_SUCCESS;
 }
