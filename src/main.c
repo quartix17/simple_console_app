@@ -3,14 +3,15 @@
 #include<math.h>
 #include<string.h>
 
-#include "include/memory_register.h"
-#include "include/input_parser.h"
-#include "include/calculator.h"
-#include "include/dynamic_array.h"
-#include "include/files.h"
-#include "include/config.h"
+#include "../include/memory_register.h"
+#include "../include/input_parser.h"
+#include "../include/calculator.h"
+#include "../include/dynamic_array.h"
+#include "../include/files.h"
+#include "../include/config.h"
 
 //TODO:: add pipes support, add ls cd pwd touch mkdir rm functions, make a little refactoring
+// fix head file.txt -10 and tail file.txt +10 bug,
 
 int main(void){
 
