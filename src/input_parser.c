@@ -9,6 +9,34 @@
 #include "../include/config.h"
 #include "../include/files.h"
 
+void print_help(){
+
+
+    printf("Available commands   Description				       Syntax\n"
+	"\n"
+    "help		     Print iinformation about available commands       help\n"
+    "\n"
+    "clear		     Remove all the symbols from console               clear\n"
+    "\n"
+    "cacl                 Calculate expresions			       calc EXPRESSION\n"
+    "\n"
+    "print                Writes text in console			       print TEXT\n"
+    "\n"
+    "mv                   Move file from FILE1 to FILE2, also renames file  mv FILE1 FILE2\n"
+    "\n"
+    "cp                   Copy FILE1 to FILE2			       cp FILE1 FILE2\n"
+    "\n"
+    "cat                  Write files in console			       cat file1 file2 ...\n"
+    "\n"
+    "head		     Write first COUNT lines of file		       head COUNT FILE\n"
+    "\n"
+    "tail		     Write last COUNT lines of file		       tail COUNT FILE\n"
+    "\n"
+    "exit		     Exit programm				       exit\n"
+
+);
+}
+
 int input_parser(Arr* arr){
     char* command = (char*)arr->arr;
 
@@ -61,7 +89,7 @@ int  input_reader(char** str,int size){
     }
 
      else if(strcmp(str[0],"help") == 0){
-        cat(1,str);
+        print_help();
     }
 
     else if(strcmp(str[0],"clear") == 0){
